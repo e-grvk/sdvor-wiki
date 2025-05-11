@@ -1,4 +1,4 @@
-export type Section = {
+export interface Section {
   id: number
   title: string
   slug: string
