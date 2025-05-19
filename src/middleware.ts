@@ -4,27 +4,30 @@ import type { Database } from '@/types/database.types'
 
 export async function middleware(request: NextRequest) {
   const response = NextResponse.next()
-  const supabase = createMiddlewareClient<Database>({ req: request, res: response })
 
-  // 1. Получаем сессию
+  const supabase = createMiddlewareClient<Database>(
+    { req: request, res: response },
+    {
+      supabaseUrl: process.env.NEXT_PUBLIC_SUPABASE_URL!,
+      supabaseKey: process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY!,
+    },
+  )
+
   const {
     data: { session },
   } = await supabase.auth.getSession()
 
   const pathname = request.nextUrl.pathname
 
-  // 2. Пропускаем UI-страницы
   if (pathname.startsWith('/ui-components')) {
     return response
   }
 
-  // 3. Проверка входа для админки
   if (pathname.startsWith('/admin')) {
     if (!session) {
       return NextResponse.redirect(new URL('/login', request.url))
     }
 
-    // 4. Получаем профиль пользователя
     const { data: profile, error } = await supabase
       .from('profiles')
       .select('is_admin')
@@ -36,7 +39,6 @@ export async function middleware(request: NextRequest) {
     }
   }
 
-  // 5. Перенаправление с /login, если уже вошел
   if (session && pathname === '/login') {
     return NextResponse.redirect(new URL('/', request.url))
   }
@@ -44,7 +46,6 @@ export async function middleware(request: NextRequest) {
   return response
 }
 
-// Обрабатываем только нужные пути (исключаем статические и API)
 export const config = {
   matcher: ['/((?!api|_next/static|_next/image|favicon.ico).*)'],
 }
