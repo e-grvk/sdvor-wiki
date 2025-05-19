@@ -30,5 +30,4 @@ async function generateTypes() {
   }
 }
 
-// Запускаем при импорте
 generateTypes()

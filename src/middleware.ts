@@ -1,43 +1,50 @@
 import { createMiddlewareClient } from '@supabase/auth-helpers-nextjs'
-import { NextResponse } from 'next/server'
-import type { NextRequest } from 'next/server'
+import { NextResponse, type NextRequest } from 'next/server'
 import type { Database } from '@/types/database.types'
 
 export async function middleware(request: NextRequest) {
   const response = NextResponse.next()
   const supabase = createMiddlewareClient<Database>({ req: request, res: response })
 
-  // 1. Проверка аутентификации
+  // 1. Получаем сессию
   const {
     data: { session },
   } = await supabase.auth.getSession()
 
-  // 2. Защита админ-роутов
-  if (request.nextUrl.pathname.startsWith('/admin')) {
+  const pathname = request.nextUrl.pathname
+
+  // 2. Пропускаем UI-страницы
+  if (pathname.startsWith('/ui-components')) {
+    return response
+  }
+
+  // 3. Проверка входа для админки
+  if (pathname.startsWith('/admin')) {
     if (!session) {
       return NextResponse.redirect(new URL('/login', request.url))
     }
 
-    // 3. Проверка прав администратора
-    const { data: profile } = await supabase
+    // 4. Получаем профиль пользователя
+    const { data: profile, error } = await supabase
       .from('profiles')
       .select('is_admin')
       .eq('id', session.user.id)
-      .single()
+      .maybeSingle()
 
-    if (!profile?.is_admin) {
+    if (error || !profile?.is_admin) {
       return NextResponse.redirect(new URL('/login?error=unauthorized', request.url))
     }
   }
 
-  // 4. Для авторизованных пользователей редирект с login на главную
-  if (session && request.nextUrl.pathname === '/login') {
+  // 5. Перенаправление с /login, если уже вошел
+  if (session && pathname === '/login') {
     return NextResponse.redirect(new URL('/', request.url))
   }
 
   return response
 }
 
+// Обрабатываем только нужные пути (исключаем статические и API)
 export const config = {
   matcher: ['/((?!api|_next/static|_next/image|favicon.ico).*)'],
 }

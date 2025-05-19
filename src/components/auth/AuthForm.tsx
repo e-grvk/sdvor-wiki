@@ -7,7 +7,7 @@ export function AuthForm() {
 
   const handleSignIn = async () => {
     const { error } = await supabase.auth.signInWithPassword({
-      email: 'admin@example.com',
+      email: 'test@example.com',
       password: 'securepassword',
     })
 
