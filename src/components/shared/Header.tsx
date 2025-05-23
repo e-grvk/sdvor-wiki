@@ -7,7 +7,7 @@ export const Header: React.FC = () => {
     <header className="bg-[var(--color-bg)] border-b border-[var(--color-border)] px-4 py-1">
       <div className="flex justify-between items-center">
         <div className="flex items-center gap-2">
-          <Image src="/sdvorLogo.png" alt="Строительный двор" width={64} height={64} />
+          <Image src="/sdvorLogo.svg" alt="Строительный двор" width={64} height={64} />
           <h1 className="text-xl font-bold text-[var(--color-text)]">Консультант-Wiki</h1>
         </div>
         <nav className="space-x-6">

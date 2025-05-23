@@ -4,7 +4,7 @@ import React, { useEffect, useState } from 'react'
 import Link from 'next/link'
 import { fetchSections } from '@/lib/services/sections-service'
 import { Section } from '@/types/sections.types'
-import { SearchInput } from '@/components/ui/SearchInput'
+import { SearchInput } from '@/components/ui/inputs/searchinput'
 
 export default function HomePage() {
   const [sections, setSections] = useState<Section[] | null>(null)
@@ -36,11 +36,17 @@ export default function HomePage() {
     <main className="min-h-screen bg-[#F5F5F5] py-16 px-4">
       <div className="max-w-5xl mx-auto">
         <div className="text-center mb-10">
-          <h1 className="text-3xl font-bold text-[var(--color-text)] mb-6">Разделы</h1>
+          <h1 className="text-3xl font-bold text-[var(--color-text)] mb-6">
+            Давай найдем информацию?
+          </h1>
           <SearchInput
-            placeholder="Найти раздел..."
             value={search}
-            onChange={(val) => setSearch(val)}
+            onChange={setSearch}
+            placeholderVariants={[
+              'Как отгрузить обратку?',
+              'Как начинается день на магазине?',
+              'Как отгрузить дебитора?',
+            ]}
           />
         </div>
 
