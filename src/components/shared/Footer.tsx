@@ -2,9 +2,10 @@ import React from 'react'
 
 export const Footer: React.FC = () => {
   return (
-    <footer className="bg-black text-white py-6 mt-12">
-      <div className="container mx-auto text-center px-4">
-        <p className="text-sm">© 2025 Консультант-вики. Все права защищены.</p>
+    <footer className="bg-[var(--color-bg)] border-t border-[var(--color-border)] text-center py-6 text-sm text-[var(--color-text)]">
+      <div className="max-w-screen-lg mx-auto px-4">
+        <p className="mb-2">&copy; 2025 Консультант-Wiki — помощник консультанта</p>
+        <p className="text-xs text-gray-500">Сделано людьми для людей</p>
       </div>
     </footer>
   )

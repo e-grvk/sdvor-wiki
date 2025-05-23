@@ -4,5 +4,14 @@
   --color-primary: #ff6600;
   --color-bg: #ffffff;
   --color-text: #333333;
+  --color-border: #e0e0e0;
   --radius: 0.5rem;
+}
+
+body {
+  @apply bg-[#F5F5F5] text-[var(--color-text)] font-sans m-0 p-0;
+}
+
+a {
+  @apply transition-colors duration-200;
 }

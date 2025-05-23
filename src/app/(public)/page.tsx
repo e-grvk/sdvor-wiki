@@ -4,11 +4,13 @@ import React, { useEffect, useState } from 'react'
 import Link from 'next/link'
 import { fetchSections } from '@/lib/services/sections-service'
 import { Section } from '@/types/sections.types'
+import { SearchInput } from '@/components/ui/SearchInput'
 
 export default function HomePage() {
   const [sections, setSections] = useState<Section[] | null>(null)
   const [error, setError] = useState<string | null>(null)
   const [loading, setLoading] = useState(true)
+  const [search, setSearch] = useState('')
 
   useEffect(() => {
     const loadSections = async () => {
@@ -26,22 +28,36 @@ export default function HomePage() {
     loadSections()
   }, [])
 
+  const filteredSections = sections?.filter((section) =>
+    section.title.toLowerCase().includes(search.toLowerCase()),
+  )
+
   return (
-    <main className="p-8">
-      <h1 className="text-2xl font-bold mb-6">Разделы</h1>
+    <main className="min-h-screen bg-[#F5F5F5] py-16 px-4">
+      <div className="max-w-5xl mx-auto">
+        <div className="text-center mb-10">
+          <h1 className="text-3xl font-bold text-[var(--color-text)] mb-6">Разделы</h1>
+          <SearchInput
+            placeholder="Найти раздел..."
+            value={search}
+            onChange={(val) => setSearch(val)}
+          />
+        </div>
 
-      {loading && <p>Загрузка...</p>}
-      {error && <p className="text-red-500">{error}</p>}
+        {loading && <p className="text-center text-gray-500">Загрузка...</p>}
+        {error && <p className="text-center text-red-500">{error}</p>}
+        {!loading && !error && filteredSections?.length === 0 && (
+          <p className="text-center text-gray-600">Секции не найдены</p>
+        )}
 
-      {!loading && !error && sections && sections.length === 0 && <p>Секции не найдены</p>}
-
-      <ul className="list-disc pl-5 space-y-2">
-        {!loading &&
-          sections &&
-          sections.map((section) => (
-            <SectionLink key={section.id} slug={section.slug} title={section.title} />
-          ))}
-      </ul>
+        <ul className="mt-8 grid gap-4 sm:grid-cols-2 md:grid-cols-3">
+          {!loading &&
+            filteredSections &&
+            filteredSections.map((section) => (
+              <SectionLink key={section.id} slug={section.slug} title={section.title} />
+            ))}
+        </ul>
+      </div>
     </main>
   )
 }
@@ -51,12 +67,13 @@ interface SectionLinkProps {
   title: string
 }
 
-const SectionLink: React.FC<SectionLinkProps> = ({ slug, title }) => {
-  return (
-    <li>
-      <Link href={`/${slug}`} className="text-blue-600 hover:underline">
-        {title}
-      </Link>
-    </li>
-  )
-}
+const SectionLink: React.FC<SectionLinkProps> = ({ slug, title }) => (
+  <li>
+    <Link
+      href={`/${slug}`}
+      className="block bg-white p-5 rounded-[var(--radius)] shadow-sm border hover:shadow-md transition hover:border-[var(--color-primary)]"
+    >
+      <h2 className="text-lg font-medium text-[var(--color-text)]">{title}</h2>
+    </Link>
+  </li>
+)
