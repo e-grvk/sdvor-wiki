@@ -1,5 +1,11 @@
-export const Footer = () => (
-  <footer className="bg-gray-100 text-center text-sm py-4">
-    © {new Date().getFullYear()} Консультант-вики
-  </footer>
-)
+import React from 'react'
+
+export const Footer: React.FC = () => {
+  return (
+    <footer className="bg-black text-white py-6 mt-12">
+      <div className="container mx-auto text-center px-4">
+        <p className="text-sm">© 2025 Консультант-вики. Все права защищены.</p>
+      </div>
+    </footer>
+  )
+}

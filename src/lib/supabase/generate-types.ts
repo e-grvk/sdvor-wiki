@@ -5,9 +5,15 @@ const SUPABASE_PROJECT_ID = process.env.NEXT_PUBLIC_SUPABASE_PROJECT_ID
 const ANON_KEY = process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY
 const TYPES_PATH = path.join(process.cwd(), 'src/types/database.types.ts')
 
+// Функция логирования ошибок
+function logError(message: string) {
+  console.error(`❌ ${message}`)
+}
+
 async function generateTypes() {
   if (!SUPABASE_PROJECT_ID || !ANON_KEY) {
-    throw new Error('Не найдено окружение supabase')
+    logError('SUPABASE_PROJECT_ID или ANON_KEY отсутствуют.')
+    return
   }
 
   try {
@@ -16,17 +22,23 @@ async function generateTypes() {
       { headers: { Accept: 'application/json' } },
     )
 
-    if (!response.ok) throw new Error('Failed to fetch types')
+    if (!response.ok) {
+      throw new Error(`Ошибка запроса типов: ${response.status} ${response.statusText}`)
+    }
 
     const { definitions } = await response.json()
+    if (!definitions) {
+      throw new Error('От Supabase не получено определений.')
+    }
+
     const typeContent =
-      `// Автоматически сгенерированно ${new Date().toISOString()}\n` +
+      `// Автоматически сгенерировано ${new Date().toISOString()}\n` +
       `export type Database = {\n  public: {\n    Tables: ${JSON.stringify(definitions, null, 2)}\n  }\n}`
 
     await fs.writeFile(TYPES_PATH, typeContent)
-    console.log('✅ Типы обнавлены успешно')
+    console.log('✅ Типы успешно обновлены.')
   } catch (error) {
-    console.error('❌ Ошибка при обновлении типов:', error)
+    logError(error instanceof Error ? error.message : 'Неизвестная ошибка.')
   }
 }
 
